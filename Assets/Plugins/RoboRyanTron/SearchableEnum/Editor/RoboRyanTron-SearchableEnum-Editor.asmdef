@@ -1,0 +1,16 @@
+{
+    "name": "RoboRyanTron-SearchableEnum-Editor",
+    "references": [
+        "RoboRyanTron-SearchableEnum"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
