@@ -1,5 +1,6 @@
 # Grow Game
 
+[Documentation](Documentation/README.md)
 
 ## Developer notes
 
