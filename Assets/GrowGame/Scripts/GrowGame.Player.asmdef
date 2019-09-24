@@ -1,3 +1,14 @@
-﻿{
-	"name": "GrowGame.Player"
+{
+    "name": "GrowGame.Player",
+    "references": [
+        "GUID:ee89136d9a8326b458f7dad075c814e6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
 }
