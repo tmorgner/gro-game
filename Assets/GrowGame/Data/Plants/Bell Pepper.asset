@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83bfa24c422ca7c45bc7a6f5eedfe90d, type: 3}
+  m_Name: Bell Pepper
+  m_EditorClassIdentifier: 
+  growTimeInTicks: 5
+  waterRequirement: {x: 0.37946874, y: 0.7549431}
+  nutritionRequirement: {x: 0.48332334, y: 0.94268024}
+  sunRequirement: {x: 0.53525066, y: 0.93209505}
+  plantPrefab: {fileID: 0}

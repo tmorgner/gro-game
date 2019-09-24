@@ -1,16 +1,26 @@
 ﻿using NaughtyAttributes;
 using UnityEngine;
 
-namespace Assets.GrowGame.Scripts.Data
+namespace GrowGame.Data
 {
+    [CreateAssetMenu(menuName = "GroGame/Plant Definition")]
     public class PlantDefinition : ScriptableObject
     {
-        [SerializeField] private float growTimeInTicks;
-        [Slider(0,1)]
+        [SerializeField] private float growTimeInSeconds;
+
+        [MinMaxSlider(0, 1)]
         [SerializeField] private Vector2 waterRequirement;
-        [Slider(0, 1)]
+        
+        [MinMaxSlider(0, 1)]
         [SerializeField] private Vector2 nutritionRequirement;
-        [Slider(0, 1)]
+        
+        [MinMaxSlider(0, 1)]
         [SerializeField] private Vector2 sunRequirement;
+
+        [SerializeField] private PlantBehaviour plantPrefab;
+
+        public PlantBehaviour PlantPrefab => plantPrefab;
+
+        public float GrowTimeInSeconds => Mathf.Min(growTimeInSeconds, 1f);
     }
 }
