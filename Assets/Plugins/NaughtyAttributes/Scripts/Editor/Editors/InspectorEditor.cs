@@ -30,7 +30,8 @@ namespace NaughtyAttributes.Editor
         // Cache non-serialized fields
         bool NonSerializedFieldsFilter(FieldInfo f)
         {
-            return f.GetCustomAttribute<DrawerAttribute>(true) != null && this.serializedObject.FindProperty(f.Name) == null;
+            var customAttributes = f.GetCustomAttributes<DrawerAttribute>(true);
+            return customAttributes.Count() != 0 && this.serializedObject.FindProperty(f.Name) == null;
         }
 
         
@@ -69,7 +70,7 @@ namespace NaughtyAttributes.Editor
             }
 
             // If there are no NaughtyAttributes use default inspector
-            if (this.fields.All(f => f.GetCustomAttribute<NaughtyAttribute>(true) == null))
+            if (this.fields.All(f => ((MemberInfo) f).GetCustomAttributes<NaughtyAttribute>(true).Count() == 0))
             {
                 this.useDefaultInspector = true;
             }
