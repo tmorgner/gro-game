@@ -1,7 +1,13 @@
-﻿namespace Assets.GrowGame.Scripts.Data
+﻿namespace GrowGame.Data
 {
     public enum PlantPart
     {
-        Root, Stem, Leaves, Fruit
+        Seed = 0, 
+        Root = 1, 
+        Stem = 2, 
+        Leaves = 3, 
+        Flower = 4, 
+        Fruit = 5
     }
+
 }
