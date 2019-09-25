@@ -168,6 +168,7 @@ namespace GrowGame
                 nutritionSlider.value = flowerBed.NutritionLevel;
                 waterSlider.value = flowerBed.NutritionLevel;
                 healthLevel.value = flowerBed.Plant.Health;
+                Debug.Log($"Health: {healthLevel.value}");
             }
         }
     }

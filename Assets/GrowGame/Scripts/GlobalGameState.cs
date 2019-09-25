@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using GrowGame.Data;
+using UnityEditor;
 using UnityEngine;
 
 namespace GrowGame
@@ -20,18 +20,30 @@ namespace GrowGame
         [SerializeField]
         private float bugChance;
 
+        [SerializeField] private float levelTime;
+
         public List<PlantDefinition> AvailablePlants => availablePlants;
 
         private List<FlowerBedBehaviour> flowerBedsSortedByPos;
+
+        public float LevelTime => levelTime;
+
+        private ActivationTimer timer;
 
         private void Awake()
         {
             flowerBedsSortedByPos = new List<FlowerBedBehaviour>();
             flowerBedsSortedByPos.AddRange(flowerBeds.OrderBy(e => e.transform.position.x));
+            timer = new ActivationTimer();
+            timer.Start();
         }
+
+        public float TimePassed => timer.TimePassed;
 
         private void Update()
         {
+            timer.Update();
+
             // all plants start with full sunlight
             var effectiveShade = 0f;
             var previousShade = 0f;

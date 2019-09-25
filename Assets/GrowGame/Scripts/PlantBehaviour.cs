@@ -64,18 +64,26 @@ namespace GrowGame
 
                 if (parts.TryGetValue(p.Part, out var list))
                 {
+                    Debug.Log("Added " + p.Part + " part " + p.name);
                     list.Add(p);
                 }
                 else
                 {
+                    Debug.Log("Found " + p.Part + " part " + p.name);
                     parts.Add(p.Part, new List<PlantPartBehaviour>() {p});
                 }
             }
+
+            Debug.Log("Found " + partsLinear.Count + " parts");
 
             animator = GetComponent<Animator>();
             timer = new ActivationTimer();
             timer.Start();
 
+        }
+
+        private void Start()
+        {
             Health = ComputeHealth();
         }
 
@@ -102,6 +110,7 @@ namespace GrowGame
         {
             if (state == PlantState.Dead)
             {
+                Debug.Log("Plant is dead");
                 return 0;
             }
 
@@ -113,6 +122,10 @@ namespace GrowGame
                 if (parts.TryGetValue(PlantPart.Seed, out var seeds))
                 {
                     SumCount(seeds, out sum, out count);
+                }
+                else
+                {
+                    Debug.LogError("No seed part found?");
                 }
             }
             else
@@ -131,6 +144,7 @@ namespace GrowGame
                 }
             }
 
+            Debug.Log("Plant health: " + count + " - " + sum);
             if (count == 0)
             {
                 return 0;
@@ -186,11 +200,11 @@ namespace GrowGame
 
         public float Health { get; private set; }
 
-        void SumCount(List<PlantPartBehaviour> parts, out float sum, out int count)
+        void SumCount(List<PlantPartBehaviour> partList, out float sum, out int count)
         {
             sum = 0;
             count = 0;
-            foreach (var plantPartBehaviour in parts)
+            foreach (var plantPartBehaviour in partList)
             {
                 sum += plantPartBehaviour.Health;
                 count += 1;

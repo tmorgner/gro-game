@@ -32,6 +32,11 @@ namespace GrowGame
 
         public UnityEvent OnDestroyed => onDestroyed;
 
+        private void Awake()
+        {
+            health = 1;
+        }
+
         private void Start()
         {
             plantBehaviour = GetComponentInParent<PlantBehaviour>();
@@ -39,8 +44,6 @@ namespace GrowGame
             {
                 plantDefinition = plantBehaviour.Definition;
             }
-
-            health = 1;
         }
 
         public float Health => health;
