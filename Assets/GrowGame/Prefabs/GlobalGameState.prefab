@@ -44,5 +44,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flowerBeds: []
-  availableCritters: []
-  availablePlants: []
+  availableCritters:
+  - {fileID: 11400000, guid: 437f48fe5a0e27a4dad7b1281b43f2cd, type: 2}
+  - {fileID: 11400000, guid: 92abbeb8e5ac8e6498a62748eb3339d6, type: 2}
+  - {fileID: 11400000, guid: f2a7d1ce96682c746b39377cc1e6b913, type: 2}
+  - {fileID: 11400000, guid: b613e54564adeb94aa374b8a53862e25, type: 2}
+  - {fileID: 11400000, guid: 7c5a1d124fb4b17468da2341638438f2, type: 2}
+  - {fileID: 11400000, guid: e8b16653fd38a0340836ebeb548a78fc, type: 2}
+  availablePlants:
+  - {fileID: 11400000, guid: 94e482b1a6d272d42981fdb42d71129d, type: 2}
+  lightRecovery: 0.25
+  bugChance: 1
