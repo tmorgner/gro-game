@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GrowGame.Data;
 using UnityEditor;
@@ -20,22 +21,68 @@ namespace GrowGame
         [SerializeField]
         private float bugChance;
 
+        public float Money { get; private set; }
+
         [SerializeField] private float levelTime;
+        [SerializeField] private int starterSeedCount;
+
+        private readonly Dictionary<long, int> seedCounts;
 
         public List<PlantDefinition> AvailablePlants => availablePlants;
 
-        private List<FlowerBedBehaviour> flowerBedsSortedByPos;
+        private readonly List<FlowerBedBehaviour> flowerBedsSortedByPos;
 
         public float LevelTime => levelTime;
 
-        private ActivationTimer timer;
+        private readonly ActivationTimer timer;
+
+        public GlobalGameState()
+        {
+            seedCounts = new Dictionary<long, int>();
+            flowerBedsSortedByPos = new List<FlowerBedBehaviour>();
+            timer = new ActivationTimer();
+        }
 
         private void Awake()
         {
-            flowerBedsSortedByPos = new List<FlowerBedBehaviour>();
+
             flowerBedsSortedByPos.AddRange(flowerBeds.OrderBy(e => e.transform.position.x));
-            timer = new ActivationTimer();
             timer.Start();
+
+            foreach (var p in availablePlants)
+            {
+                seedCounts[p.GetInstanceID()] = 1;
+            }
+
+        }
+
+        private void OnEnable()
+        {
+            foreach (var p in flowerBeds)
+            {
+                p.OnPlantSold += HandlePlantSold;
+                p.OnPlantSeedsHarvested += HandlePlantSeedHarvested;
+            }
+        }
+
+        private void OnDisable()
+        {
+            foreach (var p in flowerBeds)
+            {
+                p.OnPlantSold -= HandlePlantSold;
+                p.OnPlantSeedsHarvested -= HandlePlantSeedHarvested;
+            }
+        }
+
+        private void HandlePlantSeedHarvested(object sender, PlantDefinition e)
+        {
+            AddSeeds(e);
+        }
+
+        private void HandlePlantSold(object sender, PlantBehaviour e)
+        {
+            var value = e.Health * e.Definition.SalePrice;
+            Money += value;
         }
 
         public float TimePassed => timer.TimePassed;
@@ -77,5 +124,26 @@ namespace GrowGame
             }
         }
 
+        public void AddSeeds(PlantDefinition plant)
+        {
+            seedCounts[plant.GetInstanceID()] += plant.SeedCount;
+        }
+
+        public int GetSeedCount(PlantDefinition plant)
+        {
+            return seedCounts[plant.GetInstanceID()];
+        }
+
+        public bool TakeSeed(PlantDefinition plantDefinition)
+        {
+            var seedCount = GetSeedCount(plantDefinition);
+            if (seedCount > 0)
+            {
+                seedCounts[plantDefinition.GetInstanceID()] -= 1;
+                return true;
+            }
+
+            return false;
+        }
     }
 }

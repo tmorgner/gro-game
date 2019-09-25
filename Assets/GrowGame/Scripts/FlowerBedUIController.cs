@@ -1,5 +1,6 @@
 ﻿using System;
 using GrowGame.Data;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -22,6 +23,8 @@ namespace GrowGame
 
         [SerializeField]
         private FlowerBedBehaviour flowerBed;
+
+        [SerializeField] private GlobalGameState gameState;
 
         private bool hovered;
         private bool active;
@@ -87,7 +90,10 @@ namespace GrowGame
 
         private void OnSeedSelected(object sender, PlantDefinition e)
         {
-            flowerBed.PlantSeed(e);
+            if (gameState.TakeSeed(e))
+            {
+                flowerBed.PlantSeed(e);
+            }
         }
 
         private void OnWaterSupply()
@@ -133,6 +139,7 @@ namespace GrowGame
         private void OnPlantHarvested()
         {
             DisablePane(harvestPane);
+            EnablePane(seedingPane);
         }
 
         private void OnPlantDying()
@@ -145,6 +152,20 @@ namespace GrowGame
         private void OnPlantDied()
         {
             EnablePane(seedingPane);
+        }
+
+        [UsedImplicitly]
+        public void HarvestPlantSeeds()
+        {
+            flowerBed.HarvestPlant();
+            DisablePane(harvestPane);
+        }
+
+        [UsedImplicitly]
+        public void SellPlantFruit()
+        {
+            flowerBed.SellPlant();
+            DisablePane(harvestPane);
         }
 
         private void Update()
@@ -166,9 +187,8 @@ namespace GrowGame
                 flowerBed.State == FlowerBedBehaviour.FlowerBedState.Ripe)
             {
                 nutritionSlider.value = flowerBed.NutritionLevel;
-                waterSlider.value = flowerBed.NutritionLevel;
+                waterSlider.value = flowerBed.WaterLevel;
                 healthLevel.value = flowerBed.Plant.Health;
-                Debug.Log($"Health: {healthLevel.value}");
             }
         }
     }

@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83bfa24c422ca7c45bc7a6f5eedfe90d, type: 3}
   m_Name: Development Plant
   m_EditorClassIdentifier: 
-  growTimeInSeconds: 30
+  label: Dev
+  image: {fileID: 0}
+  growTimeInSeconds: 10
+  salePrice: 100
+  seedCount: 2
   plantPrefab: {fileID: 464069322060416660, guid: d7c60b90a572f9341ac93a4c2bba1c13,
     type: 3}
   nutritionByAge:

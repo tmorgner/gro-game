@@ -10,6 +10,8 @@ namespace GrowGame.Data
         [SerializeField] private Sprite image;
 
         [SerializeField] private float growTimeInSeconds;
+        [SerializeField] private float salePrice;
+        [SerializeField] private int seedCount;
 
         [SerializeField] private PlantBehaviour plantPrefab;
 
@@ -22,13 +24,17 @@ namespace GrowGame.Data
         [SerializeField] private AnimationCurve growthNutritionFactor;
         [SerializeField] private AnimationCurve growthSunFactor;
 
+        public float SalePrice => salePrice;
+
+        public int SeedCount => seedCount;
+
         public string Label => label;
 
         public Sprite Image => image;
 
         public PlantBehaviour PlantPrefab => plantPrefab;
 
-        public float GrowTimeInSeconds => Mathf.Min(growTimeInSeconds, 1f);
+        public float GrowTimeInSeconds => Mathf.Max(growTimeInSeconds, 1f);
 
         public float RequiredNutrition(float age)
         {
@@ -48,9 +54,9 @@ namespace GrowGame.Data
         public float ComputeGrowth(float sun, float water, float nutrition)
         {
             var growthSun = growthSunFactor.Evaluate(sun);
-            var growthWater = growthWaterFactor.Evaluate(sun);
-            var growthNutrition = growthNutritionFactor.Evaluate(sun);
-
+            var growthWater = growthWaterFactor.Evaluate(water);
+            var growthNutrition = growthNutritionFactor.Evaluate(nutrition);
+            // Debug.Log($"Growth: {growthSun} | {growthWater} | {growthNutrition}");
             return Mathf.Min(growthNutrition, Mathf.Min(growthSun, growthWater));
         }
     }

@@ -56,6 +56,9 @@ namespace GrowGame
         [Tooltip("How much water goes away in direct sunlight?")]
         [SerializeField] private float waterEvaporatedPerSecond;
 
+        public event EventHandler<PlantDefinition> OnPlantSeedsHarvested;
+        public event EventHandler<PlantBehaviour> OnPlantSold;
+
         private float waterLevel;
         private float nutritionLevel;
         private float sunlightLevel;
@@ -96,6 +99,10 @@ namespace GrowGame
             plant.transform.localScale = Vector3.one;
             plant.transform.localRotation = Quaternion.identity;
 
+            plant.OnPlantRipened.AddListener(PlantRipened);
+            plant.OnPlantDying.AddListener(PlantDying);
+            plant.OnPlantDied.AddListener(PlantDied);
+            
             State = FlowerBedState.Planted;
             Seeded?.Invoke();
         }
@@ -109,35 +116,85 @@ namespace GrowGame
         public void PlantDied()
         {
             State = FlowerBedState.Empty;
-            Died?.Invoke();
             if (plant)
             {
+                plant.OnPlantRipened.RemoveListener(PlantRipened);
+                plant.OnPlantDying.RemoveListener(PlantDying);
+                plant.OnPlantDied.RemoveListener(PlantDied);
+                plant.OnPlantHarvested.RemoveListener(PlantHarvested);
+
                 Destroy(plant);
                 plant = null;
             }
+            Died?.Invoke();
         }
 
-        public void PlantRipened()
+        void PlantRipened()
         {
             State = FlowerBedState.Ripe;
             Ripened?.Invoke();
         }
 
-        public void PlantHarvested()
+        void PlantHarvested()
         {
-            plant.Harvested();
             State = FlowerBedState.Empty;
+
+            if (plant)
+            {
+                plant.OnPlantRipened.RemoveListener(PlantRipened);
+                plant.OnPlantDying.RemoveListener(PlantDying);
+                plant.OnPlantDied.RemoveListener(PlantDied);
+                plant.OnPlantHarvested.RemoveListener(PlantHarvested);
+
+                Destroy(plant);
+                plant = null;
+            }
+
             Harvested?.Invoke();
+        }
+
+        public void HarvestPlant()
+        {
+            if (!plant)
+            {
+                return;
+            }
+
+            if (State != FlowerBedState.Ripe)
+            {
+                return;
+            }
+
+            OnPlantSeedsHarvested?.Invoke(this, Plant.Definition);
+            plant.Harvested();
+        }
+
+        public void SellPlant()
+        {
+            if (!plant)
+            {
+                return;
+            }
+
+            if (State != FlowerBedState.Ripe)
+            {
+                return;
+            }
+
+            OnPlantSold?.Invoke(this, Plant);
+            plant.Harvested();
         }
 
         public void AddWaterOnce()
         {
+            Debug.Log("Adding Water");
             waterLevel = Mathf.Clamp01(waterLevel + waterSupplyPerSecond);
         }
 
         public void AddNutritionOnce()
         {
-            waterLevel = Mathf.Clamp01(waterLevel + nutritionSupplyPerSecond);
+            Debug.Log("Adding Nutrition");
+            nutritionLevel = Mathf.Clamp01(nutritionLevel + nutritionSupplyPerSecond);
         }
 
         public void AddWaterContinuously()
@@ -218,5 +275,6 @@ namespace GrowGame
             target = default;
             return false;
         }
+
     }
 }

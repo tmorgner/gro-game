@@ -150,6 +150,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  waterSupplyPerSecond: 1
-  nutritionSupplyPerSecond: 1
+  activated:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  waterSupplyPerSecond: 0.5
+  nutritionSupplyPerSecond: 0.5
   waterEvaporatedPerSecond: 0.1
+  state: 0

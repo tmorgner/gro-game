@@ -55,4 +55,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 94e482b1a6d272d42981fdb42d71129d, type: 2}
   lightRecovery: 0.25
   bugChance: 1
-  levelTime: 60
+  levelTime: 120

@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using GrowGame.Data;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace GrowGame
+namespace GrowGame.Data
 {
-    public class SeedOptionsController: MonoBehaviour
+    public class SeedListController : MonoBehaviour
     {
         [SerializeField]
         private GlobalGameState globalState;
 
         [SerializeField]
-        private List<SeedButtonController> buttons;
-
-        public event EventHandler<PlantDefinition> OnSeedSelected;
+        private List<SeedListEntryController> buttons;
 
         private void Awake()
         {
@@ -34,24 +30,15 @@ namespace GrowGame
             }
         }
 
-        private void SeedSelectedHandler(object sender, PlantDefinition e)
-        {
-            OnSeedSelected?.Invoke(this, e);
-        }
 
-        private void OnEnable()
+        private void Update()
         {
-            foreach (var b in buttons)
+            foreach (var button in buttons)
             {
-                b.OnClicked += SeedSelectedHandler;
-            }
-        }
-
-        private void OnDisable()
-        {
-            foreach (var b in buttons)
-            {
-                b.OnClicked -= SeedSelectedHandler;
+                if (button.Plant)
+                {
+                    button.UpdateSeedCount(globalState.GetSeedCount(button.Plant));
+                }
             }
         }
     }

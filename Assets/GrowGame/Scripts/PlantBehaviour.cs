@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using GrowGame.Data;
 using NaughtyAttributes;
@@ -28,7 +29,9 @@ namespace GrowGame
         [SerializeField] private PlantDefinition definition;
 
         [SerializeField] private UnityEvent onPlantDied;
+        [SerializeField] private UnityEvent onPlantDying;
 
+        [SerializeField] private UnityEvent onPlantHarvesting;
         [SerializeField] private UnityEvent onPlantHarvested;
 
         [SerializeField] private UnityEvent onPlantRipened;
@@ -42,9 +45,17 @@ namespace GrowGame
 
         public PlantDefinition Definition => definition;
 
+        public UnityEvent OnPlantDying => onPlantDying;
+        public UnityEvent OnPlantDied => onPlantDied;
+
+        public UnityEvent OnPlantHarvesting => onPlantHarvesting;
+
+        public UnityEvent OnPlantHarvested => onPlantHarvested;
+
+        public UnityEvent OnPlantRipened => onPlantRipened;
+
         private readonly Dictionary<PlantPart, List<PlantPartBehaviour>> parts;
         private readonly List<PlantPartBehaviour> partsLinear;
-
 
         private PlantState state;
 
@@ -123,10 +134,6 @@ namespace GrowGame
                 {
                     SumCount(seeds, out sum, out count);
                 }
-                else
-                {
-                    Debug.LogError("No seed part found?");
-                }
             }
             else
             {
@@ -143,8 +150,7 @@ namespace GrowGame
                     sum += tsum;
                 }
             }
-
-            Debug.Log("Plant health: " + count + " - " + sum);
+            
             if (count == 0)
             {
                 return 0;
@@ -160,9 +166,11 @@ namespace GrowGame
 
         PlantState GetStateForRelativeTime(float plantGrowth)
         {
-            if (state == PlantState.Dead)
+            if (state == PlantState.Dead ||
+                state == PlantState.ReadyForHarvest ||
+                state == PlantState.Harvested)
             {
-                return PlantState.Dead;
+                return state;
             }
 
             if (plantGrowth < 0.25f)
@@ -194,6 +202,11 @@ namespace GrowGame
             {
                 // we know we have 4 segments in the plant's life. This is a modulo-4 to get a normalized time (0..1)
                 // for feeding into the animator.
+                if (state == PlantState.ReadyForHarvest)
+                {
+                    return timer.TimePassed - Mathf.Floor(timer.TimePassed);
+                }
+
                 return (Growth * 4) - Mathf.Floor(Growth * 4);
             }
         }
@@ -218,6 +231,8 @@ namespace GrowGame
                 return;
             }
 
+            Debug.Log($"Plant State changed: was {state} and now is {newState}");
+
             state = newState;
             // finally reconfigure the animator.
             animator.SetBool(deadId, state == PlantState.Dead);
@@ -239,15 +254,42 @@ namespace GrowGame
                     onPlantRipened?.Invoke();
                     break;
                 case PlantState.Dead:
-                    onPlantDied?.Invoke();
+                    PlantDying();
                     break;
                 case PlantState.Harvested:
-                    onPlantHarvested?.Invoke();
+                    PlantHarvesting();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
             }
         }
+
+        private void PlantHarvesting()
+        {
+            IEnumerator PlayHarvest()
+            {
+                Debug.Log("Harvesting invoked");
+                onPlantHarvesting?.Invoke();
+                yield return new WaitForSeconds(0.5f);
+                Debug.Log("Harvesting finished");
+                onPlantHarvested?.Invoke();
+            }
+
+            StartCoroutine(PlayHarvest());
+        }
+
+        private void PlantDying()
+        {
+            IEnumerator PlayDead()
+            {
+                onPlantDying?.Invoke();
+                yield return new WaitForSeconds(0.5f);
+                onPlantDied?.Invoke();
+            }
+
+            StartCoroutine(PlayDead());
+        }
+
 
         public void Harvested()
         {
@@ -261,11 +303,11 @@ namespace GrowGame
 
         public void TickGrowth(float water, float nutrition, float sunlight)
         {
-
             timer.Update();
 
             var growthFactorRaw = Definition.ComputeGrowth(sunlight, water, nutrition);
-            growth = Mathf.Clamp01(growth + growthFactorRaw * Definition.GrowTimeInSeconds * timer.DeltaTime);
+            var scaleFactor = timer.DeltaTime / Definition.GrowTimeInSeconds;
+            growth = Mathf.Clamp01(growth + growthFactorRaw * scaleFactor);
 
             var nextState = GetStateForRelativeTime(Growth);
             UpdatePlantState(nextState);
