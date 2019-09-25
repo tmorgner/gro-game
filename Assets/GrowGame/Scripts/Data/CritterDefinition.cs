@@ -15,5 +15,12 @@ namespace GrowGame.Data
 
         [SerializeField]
         private PlantPart targetPart;
+
+        [SerializeField]
+        private CritterBehaviour critterPrefab;
+
+        public PlantPart TargetPart => targetPart;
+
+        public CritterBehaviour CritterPrefab => critterPrefab;
     }
 }

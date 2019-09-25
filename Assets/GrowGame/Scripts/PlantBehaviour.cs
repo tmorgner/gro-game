@@ -35,22 +35,23 @@ namespace GrowGame
         [SerializeField] private UnityEvent onStateChanged;
         
         [ShowNonSerializedField]
-        private float ageInSeconds;
+        private float growth;
 
+        private ActivationTimer timer;
         private Animator animator;
 
         public PlantDefinition Definition => definition;
 
         private readonly Dictionary<PlantPart, List<PlantPartBehaviour>> parts;
+        private readonly List<PlantPartBehaviour> partsLinear;
 
 
         private PlantState state;
 
-        private float timeAtAwake;
-
         public PlantBehaviour()
         {
             parts = new Dictionary<PlantPart, List<PlantPartBehaviour>>();
+            partsLinear = new List<PlantPartBehaviour>();
         }
 
         protected virtual void Awake()
@@ -59,6 +60,7 @@ namespace GrowGame
             foreach (var p in rawParts)
             {
                 p.OnHarmed.AddListener(UpdateHealth);
+                partsLinear.Add(p);
 
                 if (parts.TryGetValue(p.Part, out var list))
                 {
@@ -71,8 +73,8 @@ namespace GrowGame
             }
 
             animator = GetComponent<Animator>();
-            ageInSeconds = 0;
-            timeAtAwake = Time.time;
+            timer = new ActivationTimer();
+            timer.Start();
 
             Health = ComputeHealth();
         }
@@ -83,6 +85,16 @@ namespace GrowGame
             if (Health <= 0)
             {
                 UpdatePlantState(PlantState.Dead);
+
+                // Get rid of all dead parts so that the bugs dont attack zombies
+                for (var i = partsLinear.Count - 1; i >= 0; i--)
+                {
+                    var p = partsLinear[i];
+                    if (p.Health <= 0)
+                    {
+                        partsLinear.RemoveAt(i);
+                    }
+                }
             }
         }
 
@@ -129,41 +141,32 @@ namespace GrowGame
             }
         }
 
+        public float Growth => growth;
+        // public float NormalizedAge => Mathf.Clamp01(ageInSeconds / definition.GrowTimeInSeconds);
 
-        public void Update()
-        {
-            ageInSeconds = Time.time - timeAtAwake;
-            var ageInPercent = Mathf.Clamp01(ageInSeconds / definition.GrowTimeInSeconds);
-            var nextState = GetStateForRelativeTime(ageInPercent);
-            UpdatePlantState(nextState);
-
-            animator.SetFloat(normalizedTimeId, NormalizedAnimatorTime);
-
-        }
-
-        PlantState GetStateForRelativeTime(float ageInPercent)
+        PlantState GetStateForRelativeTime(float plantGrowth)
         {
             if (state == PlantState.Dead)
             {
                 return PlantState.Dead;
             }
 
-            if (ageInPercent < 0.25f)
+            if (plantGrowth < 0.25f)
             {
                 return PlantState.Seed;
             }
 
-            if (ageInPercent < 0.5f)
+            if (plantGrowth < 0.5f)
             {
                 return PlantState.YoungPlant;
             }
 
-            if (ageInPercent < 0.75f)
+            if (plantGrowth < 0.75f)
             {
                 return PlantState.Mature;
             }
 
-            if (ageInPercent < 1f)
+            if (plantGrowth < 1f)
             {
                 return PlantState.Ripening;
             }
@@ -171,13 +174,13 @@ namespace GrowGame
             return PlantState.ReadyForHarvest;
         }
 
-        public float NormalizedAnimatorTime
+        float NormalizedAnimatorTime
         {
             get
             {
-                // we know we have 4 segments in the plant's life.
-                var ageInPercent = Mathf.Clamp01(ageInSeconds / definition.GrowTimeInSeconds);
-                return (ageInPercent * 4) - Mathf.Floor(ageInPercent * 4);
+                // we know we have 4 segments in the plant's life. This is a modulo-4 to get a normalized time (0..1)
+                // for feeding into the animator.
+                return (Growth * 4) - Mathf.Floor(Growth * 4);
             }
         }
 
@@ -240,6 +243,33 @@ namespace GrowGame
             }
 
             UpdatePlantState(PlantState.Harvested);
+        }
+
+        public void TickGrowth(float water, float nutrition, float sunlight)
+        {
+
+            timer.Update();
+
+            var growthFactorRaw = Definition.ComputeGrowth(sunlight, water, nutrition);
+            growth = Mathf.Clamp01(growth + growthFactorRaw * Definition.GrowTimeInSeconds * timer.DeltaTime);
+
+            var nextState = GetStateForRelativeTime(Growth);
+            UpdatePlantState(nextState);
+
+            animator.SetFloat(normalizedTimeId, NormalizedAnimatorTime);
+        }
+
+        public bool ChoosePlantPart(out PlantPartBehaviour b)
+        {
+            if (partsLinear.Count == 0)
+            {
+                b = null;
+                return false;
+            }
+
+            var random = UnityEngine.Random.Range(0, partsLinear.Count);
+            b = this.partsLinear[random];
+            return true;
         }
     }
 }
