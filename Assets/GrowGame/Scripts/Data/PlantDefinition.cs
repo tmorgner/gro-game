@@ -6,6 +6,9 @@ namespace GrowGame.Data
     [CreateAssetMenu(menuName = "GroGame/Plant Definition")]
     public class PlantDefinition : ScriptableObject
     {
+        [SerializeField] private string label;
+        [SerializeField] private Sprite image;
+
         [SerializeField] private float growTimeInSeconds;
 
         [SerializeField] private PlantBehaviour plantPrefab;
@@ -18,6 +21,10 @@ namespace GrowGame.Data
         [SerializeField] private AnimationCurve growthWaterFactor;
         [SerializeField] private AnimationCurve growthNutritionFactor;
         [SerializeField] private AnimationCurve growthSunFactor;
+
+        public string Label => label;
+
+        public Sprite Image => image;
 
         public PlantBehaviour PlantPrefab => plantPrefab;
 

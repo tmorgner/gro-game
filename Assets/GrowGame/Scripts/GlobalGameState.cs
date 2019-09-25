@@ -20,6 +20,8 @@ namespace GrowGame
         [SerializeField]
         private float bugChance;
 
+        public List<PlantDefinition> AvailablePlants => availablePlants;
+
         private List<FlowerBedBehaviour> flowerBedsSortedByPos;
 
         private void Awake()

@@ -43,6 +43,11 @@ namespace GrowGame
         [Tooltip("This event is thrown when the plant finished dying.")]
         private UnityEvent died;
 
+        [SerializeField]
+        [BoxGroup("Events")]
+        [Tooltip("This event is thrown when the plant awaits seeds.")]
+        private UnityEvent activated;
+
         [Tooltip("How much water is added when watering the plant.")]
         [SerializeField] private float waterSupplyPerSecond;
   
@@ -55,6 +60,8 @@ namespace GrowGame
         private float nutritionLevel;
         private float sunlightLevel;
 
+        public UnityEvent Activated => activated;
+
         public UnityEvent Seeded => seeded;
 
         public UnityEvent Ripened => ripened;
@@ -65,11 +72,17 @@ namespace GrowGame
 
         public UnityEvent Died => died;
 
-        [ShowNativeProperty]
-        public FlowerBedState State { get; private set; }
+        public FlowerBedState State
+        {
+            get => state;
+            private set => state = value;
+        }
 
         [ShowNonSerializedField]
         private PlantBehaviour plant;
+
+        [SerializeField]
+        private FlowerBedState state;
 
         public void PlantSeed(PlantDefinition seed)
         {
@@ -78,7 +91,11 @@ namespace GrowGame
                 throw new InvalidOperationException();
             }
 
-            plant = Instantiate(seed.PlantPrefab, Vector3.zero, Quaternion.identity, plantAnchor.transform);
+            plant = Instantiate(seed.PlantPrefab, plantAnchor.transform);
+            plant.transform.localPosition = Vector3.zero;
+            plant.transform.localScale = Vector3.one;
+            plant.transform.localRotation = Quaternion.identity;
+
             State = FlowerBedState.Planted;
             Seeded?.Invoke();
         }
@@ -137,6 +154,12 @@ namespace GrowGame
         {
             this.sunlightLevel = sunlight;
         }
+
+        public float WaterLevel => waterLevel;
+
+        public float NutritionLevel => nutritionLevel;
+
+        public PlantBehaviour Plant => plant;
 
         public float ProvidedShade
         {
