@@ -10,7 +10,7 @@ various hazards the player has to overcome or defend against.
 
 ## Game interface
 
-The game will be a simple 2D clicker game.
+The game will be a simple 2D click game.
 
 The Game will show the land and plants in a side view. Bar charts indicate
 plant health, light and water levels and available nutients for each plant.
@@ -24,29 +24,6 @@ Within the environment plants also need sun light and space to grow.
 Planting seeds to close to each other will result in stunted growth. 
 (There is nothing the player can do to fix that other than killing 
 competing plants quickly.)
-
-Plants grow in predefined zones. Watering and nutrition of zones does not 
-affect properties of the neighbouring zones.
-
-A game runs for a fixed amount of seasons/days/time-units. Plants have a 
-predefined grow-time. A game session allows more than one plant to grow.
-An available empty plot of soil can be planted with seeds, growing exactly
-one plant. When a plot is empty, the Game UI shows a seed selection UI.
-
-After seeding and until the plant is either dead or harvested, the plot
-UI switches to a "Health/Water/Fetilize" view that allows players to 
-either water or fertilize the plant.
-
-Once the plant is harvestable, the UI changes into a 2-button system
-that allows the player to either sell the fruit or to turn the fruit into
-multiple seeds. After that the plot UI returns to the pre-seeding stage.
-
-Critters are randomly generated and attack the plant. Each critter has
-a preferred target (birds: seeds and fruits, caterpilar: leaves etc) it
-attacks. When the critter reaches the target, it will do damage. Do enough
-damage and the part will die off. If enough vital parts are damaged, the
-plant will die. (If there is more than one part (plants have multiple 
-leaves) the sum of all parts is counted.)
 
 ## Mechanics
 
