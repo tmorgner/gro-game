@@ -432,6 +432,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Plant Button
       objectReference: {fileID: 0}
+    - target: {fileID: 4847834212053402442, guid: fab5f9ed4ab4ce2499d0e2b718a6520f,
+        type: 3}
+      propertyPath: text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2907974024470968788, guid: fab5f9ed4ab4ce2499d0e2b718a6520f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -537,7 +542,8 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5037985791928100500, guid: fab5f9ed4ab4ce2499d0e2b718a6520f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: fab5f9ed4ab4ce2499d0e2b718a6520f, type: 3}
 --- !u!224 &9121393997006826427 stripped
 RectTransform:
