@@ -11,9 +11,29 @@ namespace GrowGame
 
         public static bool IsDialogOpen => dialogOpenCount > 0;
 
+        [ShowNativeProperty]
+        public int DialogOpenCount => dialogOpenCount;
+
+        private void Awake()
+        {
+            if (canvasGroup.interactable)
+            {
+                dialogOpenCount += 1;
+            }
+            else
+            {
+                dialogOpenCount = Math.Max(0, dialogOpenCount - 1);
+            }
+        }
+
         [Button]
         public virtual void ShowDialog()
         {
+            if (dialogOpenCount > 0)
+            {
+                return;
+            }
+
             dialogOpenCount += 1;
             
             Time.timeScale = 0;
