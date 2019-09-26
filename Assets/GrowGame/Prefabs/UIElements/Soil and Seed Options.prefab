@@ -432,11 +432,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Plant Button
       objectReference: {fileID: 0}
-    - target: {fileID: 4847834212053402442, guid: fab5f9ed4ab4ce2499d0e2b718a6520f,
-        type: 3}
-      propertyPath: text
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 2907974024470968788, guid: fab5f9ed4ab4ce2499d0e2b718a6520f,
         type: 3}
       propertyPath: m_LocalPosition.x
