@@ -5810,6 +5810,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 6054811793269520933, guid: 7c7fb38d963f477409b6b688701aed1d,
+        type: 3}
+      propertyPath: gameState
+      value: 
+      objectReference: {fileID: 1541820823}
     - target: {fileID: 899092731972179072, guid: 7c7fb38d963f477409b6b688701aed1d,
         type: 3}
       propertyPath: gameState
@@ -6534,6 +6539,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameOver Screen
       objectReference: {fileID: 0}
+    - target: {fileID: 2440970081544096161, guid: a308fa524816bd847bcfb896f547a21b,
+        type: 3}
+      propertyPath: gameState
+      value: 
+      objectReference: {fileID: 1541820823}
     - target: {fileID: 2440970081544096223, guid: a308fa524816bd847bcfb896f547a21b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6639,11 +6649,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 2440970081544096161, guid: a308fa524816bd847bcfb896f547a21b,
-        type: 3}
-      propertyPath: gameState
-      value: 
-      objectReference: {fileID: 1541820823}
     - target: {fileID: 3812219147591644068, guid: a308fa524816bd847bcfb896f547a21b,
         type: 3}
       propertyPath: m_Material
@@ -6772,6 +6777,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4178324340596415523, guid: 50722a54c2e8c584ca19130a7c581e32,
+        type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4178324340596415523, guid: 50722a54c2e8c584ca19130a7c581e32,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4178324340596415523, guid: 50722a54c2e8c584ca19130a7c581e32,
+        type: 3}
+      propertyPath: m_BlocksRaycasts
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 50722a54c2e8c584ca19130a7c581e32, type: 3}
@@ -6906,6 +6926,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_BlocksRaycasts
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3008464654435234660, guid: b2474325c67833c499c0a6c25e03888f,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3008464654435234660, guid: b2474325c67833c499c0a6c25e03888f,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2474325c67833c499c0a6c25e03888f, type: 3}

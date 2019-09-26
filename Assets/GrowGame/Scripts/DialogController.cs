@@ -1,5 +1,6 @@
 ﻿using System;
 using NaughtyAttributes;
+using UnityEditor;
 using UnityEngine;
 
 namespace GrowGame
@@ -16,6 +17,13 @@ namespace GrowGame
 
         private void Awake()
         {
+#if UNITY_EDITOR
+            if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return;
+            }
+#endif
+
             if (canvasGroup.interactable)
             {
                 dialogOpenCount += 1;
@@ -35,11 +43,17 @@ namespace GrowGame
             }
 
             dialogOpenCount += 1;
-            
-            Time.timeScale = 0;
+
             canvasGroup.alpha = 1;
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
+#if UNITY_EDITOR
+            if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return;
+            }
+#endif
+            Time.timeScale = 0;
         }
 
         [Button]
@@ -47,10 +61,16 @@ namespace GrowGame
         {
             dialogOpenCount -= 1;
 
-            Time.timeScale = 1;
             canvasGroup.alpha = 0;
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
+#if UNITY_EDITOR
+            if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return;
+            }
+#endif
+            Time.timeScale = 1;
         }
 
 
