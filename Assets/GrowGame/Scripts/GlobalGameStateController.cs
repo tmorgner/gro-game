@@ -1,21 +1,22 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace GrowGame
 {
     public class GlobalGameStateController : MonoBehaviour
     {
-        [SerializeField] private Slider slider;
+        [FormerlySerializedAs("slider")] [SerializeField] private Slider timeSlider;
         [SerializeField] private Button pauseButton;
         [SerializeField] private GlobalGameState gameState;
-
+        [SerializeField] private GameOverScreenController gameOverScreen;
         [SerializeField] private PauseScreenController pauseScreen;
 
         private void OnEnable()
         {
             pauseButton.onClick.AddListener(OnPausePressed);
-            slider.minValue = 0;
-            slider.maxValue = gameState.LevelTime;
+            timeSlider.minValue = 0;
+            timeSlider.maxValue = gameState.LevelTime;
         }
 
         private void OnDisable()
@@ -35,7 +36,13 @@ namespace GrowGame
                 OnPausePressed();
             }
 
-            slider.value = gameState.TimePassed;
+            timeSlider.value = gameState.TimePassed;
+
+            if (gameState.TimePassed >= gameState.LevelTime ||
+                gameState.OutOfSeeds)
+            {
+                gameOverScreen.ShowDialog();
+            }
         }
     }
 }

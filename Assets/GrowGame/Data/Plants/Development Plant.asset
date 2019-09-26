@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Development Plant
   m_EditorClassIdentifier: 
   label: Dev
-  image: {fileID: 0}
+  image: {fileID: 21300000, guid: 0a7ec8ba2ac294943a01e5e82080cb14, type: 3}
   growTimeInSeconds: 10
   salePrice: 100
   seedCount: 2
@@ -57,7 +57,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 0.9985962
-      value: 0.19804382
+      value: 0.3018303
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -80,8 +80,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1
-      value: 1
+      time: 1.0002768
+      value: 0.40440252
       inSlope: 0
       outSlope: 0
       tangentMode: 0

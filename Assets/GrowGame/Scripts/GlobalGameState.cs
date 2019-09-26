@@ -7,19 +7,14 @@ using UnityEngine;
 
 namespace GrowGame
 {
-    public class GlobalGameState: MonoBehaviour
+    public class GlobalGameState : MonoBehaviour
     {
-        [SerializeField]
-        private List<FlowerBedBehaviour> flowerBeds;
-        [SerializeField]
-        private List<CritterDefinition> availableCritters;
-        [SerializeField]
-        private List<PlantDefinition> availablePlants;
+        [SerializeField] private List<FlowerBedBehaviour> flowerBeds;
+        [SerializeField] private List<CritterDefinition> availableCritters;
+        [SerializeField] private List<PlantDefinition> availablePlants;
 
-        [SerializeField]
-        private float lightRecovery;
-        [SerializeField]
-        private float bugChance;
+        [SerializeField] private float lightRecovery;
+        [SerializeField] private float bugChance;
 
         public float Money { get; private set; }
 
@@ -45,7 +40,6 @@ namespace GrowGame
 
         private void Awake()
         {
-
             flowerBedsSortedByPos.AddRange(flowerBeds.OrderBy(e => e.transform.position.x));
             timer.Start();
 
@@ -53,7 +47,6 @@ namespace GrowGame
             {
                 seedCounts[p.GetInstanceID()] = 1;
             }
-
         }
 
         private void OnEnable()
@@ -62,6 +55,7 @@ namespace GrowGame
             {
                 p.OnPlantSold += HandlePlantSold;
                 p.OnPlantSeedsHarvested += HandlePlantSeedHarvested;
+                p.Harvested.AddListener(HandlePlantFullyHarvested);
             }
         }
 
@@ -71,6 +65,18 @@ namespace GrowGame
             {
                 p.OnPlantSold -= HandlePlantSold;
                 p.OnPlantSeedsHarvested -= HandlePlantSeedHarvested;
+                p.Harvested.RemoveListener(HandlePlantFullyHarvested);
+            }
+        }
+
+        private void HandlePlantFullyHarvested()
+        {
+            foreach (var p in flowerBeds)
+            {
+                if (p.State == FlowerBedBehaviour.FlowerBedState.Inactive)
+                {
+                    p.ActivateFlowerBed();
+                }
             }
         }
 
@@ -118,15 +124,92 @@ namespace GrowGame
                     if (b.SelectBug(this.availableCritters, out var critter, out var target))
                     {
                         var critterInstance = Instantiate(critter);
-                            // todo: Position and send on your way...
+                        // todo: Position and send on your way...
                     }
                 }
             }
         }
 
+        public event EventHandler SeedCountChanged;
+
+        public bool HaveTimeForPlanting
+        {
+            get
+            {
+                var timeLeft = LevelTime - TimePassed;
+                foreach (var kp in availablePlants)
+                {
+                    if (kp.GrowTimeInSeconds < timeLeft)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        public bool HaveSeeds
+        {
+            get
+            {
+                foreach (var kp in seedCounts)
+                {
+                    if (kp.Value > 0)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        public bool OutOfSeeds
+        {
+            get
+            {
+                if (HaveSeeds)
+                {
+                    return false;
+                }
+
+                foreach (var b in flowerBeds)
+                {
+                    if (b.State == FlowerBedBehaviour.FlowerBedState.Inactive)
+                    {
+                        continue;
+                    }
+
+                    if (b.State != FlowerBedBehaviour.FlowerBedState.Empty)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
         public void AddSeeds(PlantDefinition plant)
         {
-            seedCounts[plant.GetInstanceID()] += plant.SeedCount;
+            var sc = plant.SeedCount;
+            if (sc > 0)
+            {
+                seedCounts[plant.GetInstanceID()] += sc;
+                SeedCountChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public int GetAllSeedCount()
+        {
+            int c = 0;
+            foreach (var p in seedCounts)
+            {
+                c += p.Value;
+            }
+
+            return c;
         }
 
         public int GetSeedCount(PlantDefinition plant)
@@ -140,6 +223,7 @@ namespace GrowGame
             if (seedCount > 0)
             {
                 seedCounts[plantDefinition.GetInstanceID()] -= 1;
+                SeedCountChanged?.Invoke(this, EventArgs.Empty);
                 return true;
             }
 

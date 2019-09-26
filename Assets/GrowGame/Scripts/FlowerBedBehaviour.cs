@@ -102,7 +102,8 @@ namespace GrowGame
             plant.OnPlantRipened.AddListener(PlantRipened);
             plant.OnPlantDying.AddListener(PlantDying);
             plant.OnPlantDied.AddListener(PlantDied);
-            
+            plant.OnPlantHarvested.AddListener(PlantHarvested);
+
             State = FlowerBedState.Planted;
             Seeded?.Invoke();
         }
@@ -116,6 +117,7 @@ namespace GrowGame
         public void PlantDied()
         {
             State = FlowerBedState.Empty;
+            Debug.Log("Plant died");
             if (plant)
             {
                 plant.OnPlantRipened.RemoveListener(PlantRipened);
@@ -123,7 +125,7 @@ namespace GrowGame
                 plant.OnPlantDied.RemoveListener(PlantDied);
                 plant.OnPlantHarvested.RemoveListener(PlantHarvested);
 
-                Destroy(plant);
+                Destroy(plant.gameObject);
                 plant = null;
             }
             Died?.Invoke();
@@ -138,7 +140,7 @@ namespace GrowGame
         void PlantHarvested()
         {
             State = FlowerBedState.Empty;
-
+            Debug.Log("Plant Harvested " + plant);
             if (plant)
             {
                 plant.OnPlantRipened.RemoveListener(PlantRipened);
@@ -146,7 +148,7 @@ namespace GrowGame
                 plant.OnPlantDied.RemoveListener(PlantDied);
                 plant.OnPlantHarvested.RemoveListener(PlantHarvested);
 
-                Destroy(plant);
+                Destroy(plant.gameObject);
                 plant = null;
             }
 
@@ -276,5 +278,12 @@ namespace GrowGame
             return false;
         }
 
+        public void ActivateFlowerBed()
+        {
+            if (State == FlowerBedState.Inactive)
+            {
+                State = FlowerBedState.Empty;
+            }
+        }
     }
 }

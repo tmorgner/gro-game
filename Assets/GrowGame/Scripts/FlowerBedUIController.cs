@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using GrowGame.Data;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.EventSystems;
 
 namespace GrowGame
 {
-    public class FlowerBedUIController: MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class FlowerBedUIController : MonoBehaviour
     {
         [SerializeField] private Slider nutritionSlider;
         [SerializeField] private Slider waterSlider;
@@ -21,37 +22,31 @@ namespace GrowGame
         [SerializeField] private CanvasGroup harvestPane;
         [SerializeField] private SeedOptionsController seedOptions;
 
-        [SerializeField]
-        private FlowerBedBehaviour flowerBed;
+        [SerializeField] private FlowerBedBehaviour flowerBed;
 
         [SerializeField] private GlobalGameState gameState;
+        [SerializeField] private HarvestPaneController harvestPaneBehaviour;
+
+        public GlobalGameState GameState => gameState;
 
         private bool hovered;
-        private bool active;
 
-        public void OnPointerEnter(PointerEventData eventData)
+        public void OnPointerEnter()
         {
             hovered = true;
+            ApplyState();
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        public void OnPointerExit()
         {
             hovered = false;
+            ApplyState();
         }
 
         private void Awake()
         {
-            if (!flowerBed || flowerBed.State == FlowerBedBehaviour.FlowerBedState.Inactive)
-            {
-                SetPaneState(selfPane, false);
-            }
-            else
-            {
-                SetPaneState(selfPane, true);
-                SetPaneState(seedingPane, flowerBed.State == FlowerBedBehaviour.FlowerBedState.Empty);
-                SetPaneState(growingPane, flowerBed.State == FlowerBedBehaviour.FlowerBedState.Planted);
-                SetPaneState(harvestPane, flowerBed.State == FlowerBedBehaviour.FlowerBedState.Ripe);
-            }
+            SetPaneState(selfPane, false);
+            ApplyState();
         }
 
         private void OnEnable()
@@ -62,10 +57,16 @@ namespace GrowGame
             flowerBed.Seeded.AddListener(OnPlantSeeded);
             flowerBed.Ripened.AddListener(OnPlantRipened);
             flowerBed.Harvested.AddListener(OnPlantHarvested);
+            gameState.SeedCountChanged += OnSeedCountChanged;
 
             nutritionButton.onClick.AddListener(OnNutritionSupply);
             waterButton.onClick.AddListener(OnWaterSupply);
             seedOptions.OnSeedSelected += OnSeedSelected;
+        }
+
+        private void OnSeedCountChanged(object sender, EventArgs e)
+        {
+            ApplyState();
         }
 
         private void OnDisable()
@@ -76,6 +77,7 @@ namespace GrowGame
             flowerBed.Seeded.RemoveListener(OnPlantSeeded);
             flowerBed.Ripened.RemoveListener(OnPlantRipened);
             flowerBed.Harvested.RemoveListener(OnPlantHarvested);
+            gameState.SeedCountChanged -= OnSeedCountChanged;
 
             nutritionButton.onClick.RemoveListener(OnNutritionSupply);
             waterButton.onClick.RemoveListener(OnWaterSupply);
@@ -106,22 +108,28 @@ namespace GrowGame
             flowerBed.AddNutritionOnce();
         }
 
-        void SetPaneState(CanvasGroup g, bool state)
+        void SetPaneState(CanvasGroup g, bool state, float alphaDisabled = 0, float alphaEnabled = 1)
         {
-            if (state) EnablePane(g);
-            else DisablePane(g);
+            if (state)
+            {
+                g.alpha = alphaEnabled;
+                g.blocksRaycasts = true;
+            }
+            else
+            {
+                g.alpha = alphaDisabled;
+                g.blocksRaycasts = false;
+            }
         }
 
         void DisablePane(CanvasGroup g)
         {
-            g.alpha = 0;
-            g.blocksRaycasts = false;
+            SetPaneState(g, false);
         }
 
         void EnablePane(CanvasGroup g)
         {
-            g.alpha = 1;
-            g.blocksRaycasts = true;
+            SetPaneState(g, true);
         }
 
         private void OnPlantSeeded()
@@ -168,20 +176,50 @@ namespace GrowGame
             DisablePane(harvestPane);
         }
 
-        private void Update()
+        private FlowerBedBehaviour.FlowerBedState state;
+        public event EventHandler FlowBedStateChanged;
+
+        public void UpdateState(FlowerBedBehaviour.FlowerBedState nextState)
         {
-            if (flowerBed.State == FlowerBedBehaviour.FlowerBedState.Inactive)
+            if (nextState == state)
             {
-                active = false;
-                DisablePane(selfPane);
-                DisablePane(seedingPane);
                 return;
             }
 
-            if (active == false)
+            state = nextState;
+            FlowBedStateChanged?.Invoke(this, EventArgs.Empty);
+            ApplyState();
+        }
+
+        void ApplyState()
+        {
+            if (!flowerBed || state == FlowerBedBehaviour.FlowerBedState.Inactive)
             {
-                EnablePane(selfPane);
+                SetPaneState(selfPane, false);
             }
+            else
+            {
+                if (state == FlowerBedBehaviour.FlowerBedState.Empty && !gameState.HaveSeeds)
+                {
+                    SetPaneState(selfPane, false);
+                }
+                else
+                {
+                    SetPaneState(selfPane, hovered, 0.5f);
+                }
+                SetPaneState(seedingPane, state == FlowerBedBehaviour.FlowerBedState.Empty);
+                SetPaneState(growingPane, state == FlowerBedBehaviour.FlowerBedState.Planted);
+                SetPaneState(harvestPane, state == FlowerBedBehaviour.FlowerBedState.Ripe);
+                if (state == FlowerBedBehaviour.FlowerBedState.Ripe)
+                {
+                    harvestPaneBehaviour.OnPaneVisible();
+                }
+            }
+        }
+
+        private void Update()
+        {
+            UpdateState(flowerBed.State);
 
             if (flowerBed.State == FlowerBedBehaviour.FlowerBedState.Planted ||
                 flowerBed.State == FlowerBedBehaviour.FlowerBedState.Ripe)
