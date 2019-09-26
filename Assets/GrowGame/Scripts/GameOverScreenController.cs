@@ -1,6 +1,7 @@
 ﻿using RoboRyanTron.SceneReference;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GrowGame
 {
@@ -22,6 +23,11 @@ namespace GrowGame
             {
                 messageField.text = $"You have <b>no seeds</b> left. Working in the garden earned you £ {gameState.Money:0.00} today.";
             }
+        }
+
+        public void BackToMenu()
+        {
+            SceneManager.LoadScene(menuScene.SceneName);
         }
     }
 }
