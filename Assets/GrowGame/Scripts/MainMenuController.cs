@@ -13,6 +13,7 @@ namespace GrowGame
 
         private void Awake()
         {
+            Time.timeScale = 1;
             if (Application.platform == RuntimePlatform.WebGLPlayer)
             {
                 quitButton.gameObject.SetActive(false);
